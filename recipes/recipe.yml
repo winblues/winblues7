@@ -24,6 +24,7 @@ modules:
   - type: script
     scripts:
       - 10-aero-theme.sh
+      - 11-fonts.sh
 
   - type: signing
 
