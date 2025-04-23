@@ -1,4 +1,4 @@
-# Blutiger Aero
+# Winblues 7
 
 Testing ground for [Aurora](https://github.com/ublue-os/aurora) + [AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma)
 
