@@ -13,8 +13,9 @@ Source0:        https://gitgud.io/wackyideas/%{name}/-/archive/%{commit}/%{name}
 
 
 # Build dependencies
-BuildRequires:  cmake ninja-build make gcc-c++
+BuildRequires:  cmake make gcc-c++
 BuildRequires:  extra-cmake-modules
+BuildRequires:  pkgconfig
 # KDE Framework dependencies
 BuildRequires:  kf6-ki18n-devel
 BuildRequires:  kf6-kconfig-devel
@@ -50,8 +51,10 @@ BuildRequires:  qt6-qtdeclarative-devel
 # Other dependencies
 BuildRequires:  wayland-devel
 BuildRequires:  plasma-wayland-protocols-devel
+BuildRequires:  libepoxy-devel
 
 # Runtime dependencies
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Requires:       kpackagetool6
 Requires:       sddmthemeinstaller
 Requires:       tar
@@ -61,39 +64,85 @@ Requires:       kfontinst
 %description
 AeroThemePlasma is a KDE Plasma desktop customization that mimics the visual style of Windows 7, including cursors, sounds, color schemes, KWin effects, and SDDM theme.
 
+%package libs
+Summary:        Runtime libraries for AeroThemePlasma
+# No dependencies - this is a base package
+
+%description libs
+Shared libraries needed by AeroThemePlasma components,
+including the smoddecoration library required by window
+decorations and effects.
+
+%package devel
+Summary:        Development files for AeroThemePlasma
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+
+%description devel
+Development files for AeroThemePlasma, including headers and 
+pkgconfig files needed for building additional decorations 
+and effects.
+
 %prep
 %autosetup -n %{name}-%{commit}
 
+# # Create pkgconfig file for smoddecoration
+# cat > smoddecoration.pc << EOF
+# prefix=%{_prefix}
+# exec_prefix=${prefix}
+# libdir=${prefix}/%{_lib}
+# includedir=${prefix}/include
+
+# Name: smoddecoration
+# Description: SMOD Decoration Library
+# Version: 1.0.0
+# Requires: 
+# Libs: -L${libdir} -lsmoddecoration
+# Cflags: -I${includedir}/smoddecoration
+# EOF
+
 %build
-# Build KWin decorations if CMakeLists.txt exists
-if [ -f kwin/decoration/CMakeLists.txt ]; then
-  mkdir -p kwin/decoration/build
-  pushd kwin/decoration/build
-  %cmake -G Ninja ..
-  %ninja_build
-  popd
-fi
+true
+# Build smoddecoration library first (will be in -libs package)
+#if [ -f kwin/decoration/kdecoration/CMakeLists.txt ]; then
+#  mkdir -p kwin/decoration/kdecoration/build
+#  pushd kwin/decoration/kdecoration/build
+#  %cmake -DBUILD_KF6=ON ..
+#  %cmake_build
+#  popd
+#fi
+
+# Build other KWin decorations
+#for dir in kwin/decoration/*; do
+#  if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ] && [ "$(basename "$dir")" != "kdecoration" ]; then
+#    mkdir -p "$dir/build"
+#    pushd "$dir/build"
+#    %cmake -DBUILD_KF6=ON ..
+#    %cmake_build
+#    popd
+#  fi
+#done
 
 # Build KWin C++ effects
-for dir in kwin/effects_cpp/*; do
-  if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
-    mkdir -p "$dir/build"
-    pushd "$dir/build"
-    %cmake -G Ninja ..
-    %ninja_build
-    popd
-  fi
-done
+#for dir in kwin/effects_cpp/*; do
+#  if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
+#    mkdir -p "$dir/build"
+#    pushd "$dir/build"
+#    %cmake -DBUILD_KF6=ON ..
+#    %cmake_build
+#    popd
+#  fi
+#done
 
-for dir in plasma/plasmoids/src/*; do
-  if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
-    mkdir -p "$dir/build"
-    pushd "$dir/build"
-    %cmake -G Ninja ..
-    %ninja_build
-    popd
-  fi
-done
+# Build plasmoids
+#for dir in plasma/plasmoids/src/*; do
+#  if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
+#    mkdir -p "$dir/build"
+#    pushd "$dir/build"
+#    %cmake -DBUILD_KF6=ON ..
+#    %cmake_build
+#    popd
+#  fi
+#done
 
 %install
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -105,30 +154,43 @@ mkdir -p %{buildroot}%{_datadir}/mime/packages
 mkdir -p %{buildroot}%{_datadir}/color-schemes
 mkdir -p %{buildroot}%{_datadir}/aerotheme
 
-# Install KWin decorations
-if [ -d kwin/decoration/build ]; then
-  pushd kwin/decoration/build
-  DESTDIR=%{buildroot} %ninja_install
-  popd
-fi
+# # First install smoddecoration library
+# if [ -d kwin/decoration/kdecoration/build ]; then
+#   pushd kwin/decoration/kdecoration/build
+#   %make_install
+#   popd
+  
+#   # Install the pkgconfig file
+#   mkdir -p %{buildroot}%{_libdir}/pkgconfig
+#   install -m 644 smoddecoration.pc %{buildroot}%{_libdir}/pkgconfig/
+# fi
 
-# Install KWin C++ effects
-for dir in kwin/effects_cpp/*; do
-  if [ -d "$dir" ] && [ -d "$dir/build" ]; then
-    pushd "$dir/build"
-    DESTDIR=%{buildroot} %ninja_install
-    popd
-  fi
-done
+# # Install other KWin decorations if any
+# for dir in kwin/decoration/*; do
+#   if [ -d "$dir" ] && [ -d "$dir/build" ] && [ "$(basename "$dir")" != "kdecoration" ]; then
+#     pushd "$dir/build"
+#     %make_install
+#     popd
+#   fi
+# done
 
-# Install built plasmoids
-for dir in plasma/plasmoids/src/*; do
-  if [ -d "$dir" ] && [ -d "$dir/build" ]; then
-    pushd "$dir/build"
-    DESTDIR=%{buildroot} %ninja_install
-    popd
-  fi
-done
+# # Install KWin C++ effects
+# for dir in kwin/effects_cpp/*; do
+#   if [ -d "$dir" ] && [ -d "$dir/build" ]; then
+#     pushd "$dir/build"
+#     %make_install
+#     popd
+#   fi
+# done
+
+# # Install built plasmoids
+# for dir in plasma/plasmoids/src/*; do
+#   if [ -d "$dir" ] && [ -d "$dir/build" ]; then
+#     pushd "$dir/build"
+#     %make_install
+#     popd
+#   fi
+# done
 
 # Install Kvantum config
 if [ -d "misc/kvantum" ]; then
@@ -148,31 +210,20 @@ if [ -f "misc/sounds/sounds.tar.gz" ]; then
 fi
 
 # Install icons and cursors
-if [ -f "misc/icons/Windows 7 Aero.tar.gz" ]; then
-  tar -xf "misc/icons/Windows 7 Aero.tar.gz" -C %{buildroot}%{_datadir}/icons
-fi
-
-if [ -f "misc/cursors/aero-drop.tar.gz" ]; then
-  tar -xf misc/cursors/aero-drop.tar.gz -C %{buildroot}%{_datadir}/icons
-fi
+tar -xf "misc/icons/Windows 7 Aero.tar.gz" -C %{buildroot}%{_datadir}/icons
+tar -xf misc/cursors/aero-drop.tar.gz -C %{buildroot}%{_datadir}/icons
 
 # Install color scheme
-if [ -f "plasma/color_scheme/AeroColorScheme1.colors" ]; then
   install -Dm644 plasma/color_scheme/AeroColorScheme1.colors \
     %{buildroot}%{_datadir}/color-schemes/AeroColorScheme1.colors
-fi
 
 # Install plasma desktop theme
-if [ -d "plasma/desktoptheme/Seven-Black" ]; then
   mkdir -p %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black
   cp -r plasma/desktoptheme/Seven-Black/* %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black/
-fi
 
 # Install look-and-feel
-if [ -d "plasma/look-and-feel/authui7" ]; then
   mkdir -p %{buildroot}%{_datadir}/plasma/look-and-feel/authui7
   cp -r plasma/look-and-feel/authui7/* %{buildroot}%{_datadir}/plasma/look-and-feel/authui7/
-fi
 
 # Install QML plasmoids
 for dir in plasma/plasmoids/io.gitgud.wackyideas.*; do
@@ -193,10 +244,8 @@ for dir in plasma/plasmoids/org.kde.*; do
 done
 
 # Install panel layout templates
-if [ -d "plasma/layout-templates" ]; then
   mkdir -p %{buildroot}%{_datadir}/plasma/layout-templates
   cp -r plasma/layout-templates/* %{buildroot}%{_datadir}/plasma/layout-templates/
-fi
 
 # Install KWin effects (QML effects)
 for dir in kwin/effects/*; do
@@ -232,15 +281,11 @@ if [ -d "kwin/outline/plasma" ]; then
 fi
 
 # Install mimetypes
-if [ -d "misc/mimetype" ]; then
   cp -r misc/mimetype/* %{buildroot}%{_datadir}/mime/packages/
-fi
 
 # Install fontconfig override
-if [ -f "misc/fontconfig/fonts.conf" ]; then
   install -Dm644 misc/fontconfig/fonts.conf \
     %{buildroot}%{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
-fi
 
 # Branding files
 mkdir -p %{buildroot}%{_datadir}/aerotheme/branding
@@ -275,8 +320,19 @@ install -m755 install_plasmoids.sh %{buildroot}%{_datadir}/aerotheme/scripts/
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/mime/packages/*
 %{_datadir}/aerotheme
+%{_libdir}/qt6/plugins/kwin/plugins/kdecoration*
+%{_libdir}/qt6/plugins/plasma/kcms/kcm_smoddecoration*
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 
+%files libs
+%{_libdir}/libsmoddecoration.so*
+%{_libdir}/qt6/plugins/org.kde.kdecoration3*
+
+%files devel
+%{_libdir}/pkgconfig/smoddecoration.pc
+# Include any headers if installed
+# %{_includedir}/smoddecoration/
+
 %changelog
-* Thu Apr 24 2025 Adam Fidel <adam@blues.win> - 0-0.1.20250423git3c2990e
-- Initial RPM packaging of AeroThemePlasma
+* 2025-04-24 15:17:45 ledif <adam@blues.win> - 0-0.1.20250423git3c2990e
+- Initial RPM packaging of AeroThemePlasmaf
