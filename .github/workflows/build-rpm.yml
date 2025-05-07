@@ -1,0 +1,85 @@
+name: Build and Release RPM
+
+on:
+  push:
+    paths:
+      - pkgs/aerothemeplasma/aerothemeplasma.spec
+  pull_request:
+    paths:
+      - pkgs/aerothemeplasma/aerothemeplasma.spec
+
+jobs:
+  build-rpm:
+    name: Build RPM
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Podman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y podman
+
+    - name: Build RPM
+      run: |
+        # Ensure permissions for the mock cache
+        mkdir -p mock_cache
+        chmod -R 777 mock_cache
+
+        # Run the RPM build using the toolchain
+        podman run --rm --cap-add=SYS_ADMIN --privileged \
+          --volume ${{ github.workspace }}:/anda \
+          --volume mock_cache:/var/lib/mock \
+          --workdir /anda \
+          ghcr.io/terrapkg/builder:f42 anda build -c terra-42-x86_64 pkgs/aerothemeplasma/pkg
+
+    - name: Extract RPM Version
+      id: extract_version
+      run: |
+        rpm_file=$(find anda-build/rpm/rpms -name '*.rpm' | head -n 1)
+        rpm_version=$(rpm -qp --queryformat '%{NAME}-%{VERSION}-%{RELEASE}' "$rpm_file" 2>/dev/null)
+        echo "RPM_VERSION=$rpm_version" >> $GITHUB_ENV
+        echo "Extracted RPM version: $rpm_version"
+
+    - name: Upload RPM as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: RPM
+        path: anda-build/rpm/rpms/*.rpm
+
+  create-release:
+    name: Create GitHub Release
+    needs: build-rpm
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download RPM artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: RPM
+        path: ./rpm-artifacts
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.RPM_VERSION }}
+        release_name: AeroTheme RPM Build ${{ env.RPM_VERSION }}
+        body: |
+          This release contains the RPM build for AeroThemePlasma.
+        draft: false
+        prerelease: false
+
+    - name: Upload RPM to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./rpm-artifacts/*.rpm
+        asset_name: ${{ env.RPM_VERSION }}.rpm
+        asset_content_type: application/x-rpm

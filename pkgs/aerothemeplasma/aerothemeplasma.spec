@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 %global commit 3c2990e202d67be2a383581eb491ef74e7ffaf5d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global commitdate 20250423
@@ -324,5 +326,5 @@ install -m755 install_plasmoids.sh %{buildroot}%{_datadir}/aerotheme/scripts/
 
 
 %changelog
-* 2025-04-24 15:17:45 ledif <adam@blues.win> - 0-0.1.20250423git3c2990e
-- Initial RPM packaging of AeroThemePlasmaf
+* Wed Apr 24 2025 Adam Ledif <adam@blues.win> - 0-0.1.20250423git3c2990e
+- Initial RPM packaging of AeroThemePlasma
