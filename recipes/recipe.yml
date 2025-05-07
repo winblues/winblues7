@@ -2,18 +2,14 @@
 name: blue7
 description: Winblues 7
 
-base-image: ghcr.io/ublue-os/aurora-dx
-image-version: stable-daily
+base-image: ghcr.io/ublue-os/bazzite-nvidia-open
+image-version: latest
 
 modules:
   - type: files
     files:
       - source: system
         destination: /
-
-  - type: rpm-ostree
-    install:
-      - neovim
 
   - type: script
     snippets:
