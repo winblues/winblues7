@@ -13,45 +13,45 @@ Source0:        https://gitgud.io/wackyideas/%{name}/-/archive/%{commit}/%{name}
 
 
 # Build dependencies
-BuildRequires:  cmake make gcc-c++
-BuildRequires:  extra-cmake-modules
-BuildRequires:  pkgconfig
-# KDE Framework dependencies
-BuildRequires:  kf6-ki18n-devel
-BuildRequires:  kf6-kconfig-devel
-BuildRequires:  kf6-kguiaddons-devel
-BuildRequires:  kf6-kcoreaddons-devel
-BuildRequires:  kf6-kpackage-devel
-BuildRequires:  kf6-kio-devel
-BuildRequires:  kf6-ksvg-devel
-BuildRequires:  kf6-karchive-devel
-BuildRequires:  kf6-kiconthemes-devel 
-BuildRequires:  kf6-kcmutils-devel
-BuildRequires:  kf6-kglobalaccel-devel
-BuildRequires:  kf6-kcrash-devel
-BuildRequires:  kf6-kdeclarative-devel
-BuildRequires:  kf6-kdbusaddons-devel
-BuildRequires:  kf6-solid-devel
-BuildRequires:  kf6-knotifications-devel
-BuildRequires:  kf6-kwidgetsaddons-devel
-BuildRequires:  kf6-kirigami-devel
-BuildRequires:  kf6-kirigami-addons-devel
-# Plasma dependencies
-BuildRequires:  plasma-workspace-devel
-BuildRequires:  kwin-devel
-BuildRequires:  kdecoration-devel
-# Qt dependencies
-BuildRequires:  qt6-qtbase-devel
-BuildRequires:  qt6-qtbase-private-devel
-BuildRequires:  qt6-qtsvg-devel
-BuildRequires:  qt6-qt5compat-devel
-BuildRequires:  qt6-qtmultimedia-devel
-BuildRequires:  qt6-qtwayland-devel
-BuildRequires:  qt6-qtdeclarative-devel
-# Other dependencies
-BuildRequires:  wayland-devel
-BuildRequires:  plasma-wayland-protocols-devel
-BuildRequires:  libepoxy-devel
+#BuildRequires:  cmake make gcc-c++
+#BuildRequires:  extra-cmake-modules
+#BuildRequires:  pkgconfig
+## KDE Framework dependencies
+#BuildRequires:  kf6-ki18n-devel
+#BuildRequires:  kf6-kconfig-devel
+#BuildRequires:  kf6-kguiaddons-devel
+#BuildRequires:  kf6-kcoreaddons-devel
+#BuildRequires:  kf6-kpackage-devel
+#BuildRequires:  kf6-kio-devel
+#BuildRequires:  kf6-ksvg-devel
+#BuildRequires:  kf6-karchive-devel
+#BuildRequires:  kf6-kiconthemes-devel 
+#BuildRequires:  kf6-kcmutils-devel
+#BuildRequires:  kf6-kglobalaccel-devel
+#BuildRequires:  kf6-kcrash-devel
+#BuildRequires:  kf6-kdeclarative-devel
+#BuildRequires:  kf6-kdbusaddons-devel
+#BuildRequires:  kf6-solid-devel
+#BuildRequires:  kf6-knotifications-devel
+#BuildRequires:  kf6-kwidgetsaddons-devel
+#BuildRequires:  kf6-kirigami-devel
+#BuildRequires:  kf6-kirigami-addons-devel
+## Plasma dependencies
+#BuildRequires:  plasma-workspace-devel
+#BuildRequires:  kwin-devel
+#BuildRequires:  kdecoration-devel
+## Qt dependencies
+#BuildRequires:  qt6-qtbase-devel
+#BuildRequires:  qt6-qtbase-private-devel
+#BuildRequires:  qt6-qtsvg-devel
+#BuildRequires:  qt6-qt5compat-devel
+#BuildRequires:  qt6-qtmultimedia-devel
+#BuildRequires:  qt6-qtwayland-devel
+#BuildRequires:  qt6-qtdeclarative-devel
+## Other dependencies
+#BuildRequires:  wayland-devel
+#BuildRequires:  plasma-wayland-protocols-devel
+#BuildRequires:  libepoxy-devel
 
 # Runtime dependencies
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
@@ -320,18 +320,8 @@ install -m755 install_plasmoids.sh %{buildroot}%{_datadir}/aerotheme/scripts/
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/mime/packages/*
 %{_datadir}/aerotheme
-%{_libdir}/qt6/plugins/kwin/plugins/kdecoration*
-%{_libdir}/qt6/plugins/plasma/kcms/kcm_smoddecoration*
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 
-%files libs
-%{_libdir}/libsmoddecoration.so*
-%{_libdir}/qt6/plugins/org.kde.kdecoration3*
-
-%files devel
-%{_libdir}/pkgconfig/smoddecoration.pc
-# Include any headers if installed
-# %{_includedir}/smoddecoration/
 
 %changelog
 * 2025-04-24 15:17:45 ledif <adam@blues.win> - 0-0.1.20250423git3c2990e
