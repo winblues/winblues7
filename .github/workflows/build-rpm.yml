@@ -44,7 +44,7 @@ jobs:
         echo "Extracted RPM version: $rpm_version"
 
     - name: Upload RPM as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: RPM
         path: anda-build/rpm/rpms/*.rpm

@@ -1,3 +1,4 @@
+anda-build/
 cosign.key
 cosign.private
 /Containerfile
