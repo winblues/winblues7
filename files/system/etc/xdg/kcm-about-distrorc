@@ -1,0 +1,7 @@
+[General]
+LogoPath=/usr/share/pixmaps/system-logo-white.png
+Name=Winblues 7
+Website=https://blues.win/7
+Variant=NVIDIA Edition
+Version=
+UseOSReleaseVersion=false
