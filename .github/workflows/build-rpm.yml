@@ -1,4 +1,3 @@
-
 name: Build and Release RPM
 permissions:
   contents: write
@@ -17,6 +16,8 @@ jobs:
   build-rpm:
     name: Build RPM
     runs-on: ubuntu-latest
+    outputs:
+      rpm_version: ${{ steps.extract_version.outputs.RPM_VERSION }}
 
     steps:
     - name: Checkout repository
@@ -72,8 +73,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.extract_version.outputs.RPM_VERSION }}
-        release_name: AeroTheme RPM Build ${{ steps.extract_version.outputs.RPM_VERSION }}
+        tag_name: ${{ needs.build-rpm.outputs.rpm_version }}
+        release_name: AeroTheme RPM Build ${{ needs.build-rpm.outputs.rpm_version }}
         body: |
           This release contains the RPM build for AeroThemePlasma.
         draft: false
@@ -86,5 +87,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./rpm-artifacts/*.rpm
-        asset_name: ${{ env.RPM_VERSION }}.rpm
+        asset_name: ${{ needs.build-rpm.outputs.rpm_version }}.rpm
         asset_content_type: application/x-rpm
