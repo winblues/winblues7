@@ -15,10 +15,13 @@ modules:
     install:
       packages:
       - kvantum
+      - plymouth-plugin-script
 
   - type: script
     snippets:
       - 'cd $CONFIG_DIRECTORY/scripts && for script in *.sh; do [ -f "$script" ] && bash "$script" || exit $?; done'
 
-  - type: signing
+  # Regenerate initramfs because of plymouth
+  - type: initramfs
 
+  - type: signing

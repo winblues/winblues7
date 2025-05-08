@@ -1,6 +1,6 @@
 rebase:
   #!/bin/bash
-  bluebuild switch --tempdir /var/tmp recipes/recipe.yml
+  bluebuild switch -B podman --tempdir /var/tmp recipes/recipe.yml
 
 build:
   #!/bin/bash
