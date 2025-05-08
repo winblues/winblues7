@@ -1,0 +1,19 @@
+[General]
+ColorScheme=AeroColorScheme1
+Name=Winblues 7
+XftAntialias=true
+XftHintStyle=hintslight
+XftSubPixel=rgb
+fixed=Monospace,10,-1,5,50,0,0,0,0,0
+font=Segoe UI,10,-1,5,50,0,0,0,0,0
+menuFont=Segoe UI,10,-1,5,50,0,0,0,0,0
+smallestReadableFont=Segoe UI,8,-1,5,50,0,0,0,0,0
+toolBarFont=Segoe UI,9,-1,5,50,0,0,0,0,0
+audioTheme=WindowsMedia
+
+[KDE]
+LookAndFeelPackage=authui7
+SingleClick=false
+
+[WM]
+activeFont=Segoe UI,10,-1,5,50,0,0,0,0,0
