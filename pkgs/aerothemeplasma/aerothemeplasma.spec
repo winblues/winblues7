@@ -2,7 +2,7 @@
 
 %global commit 3c2990e202d67be2a383581eb491ef74e7ffaf5d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250508
+%global commitdate 20250509
 
 Name:           aerothemeplasma
 Version:        0
@@ -13,11 +13,48 @@ License:        AGPLv3
 URL:            https://gitgud.io/wackyideas/aerothemeplasma
 Source0:        https://gitgud.io/wackyideas/%{name}/-/archive/%{commit}/%{name}-%{commit}.zip
 
-# KDE6 Dependencies
-Requires:       plasma-workspace
-Requires:       plasma-desktop
-Requires:       kwin
-Requires:       sddm-kcm
+# Build requirements for C++ components
+BuildRequires:  ninja-build
+
+BuildRequires:  cmake make gcc-c++
+BuildRequires:  extra-cmake-modules
+BuildRequires:  pkgconfig
+BuildRequires:  kf6-ki18n-devel
+BuildRequires:  kf6-kconfig-devel
+BuildRequires:  kf6-kguiaddons-devel
+BuildRequires:  kf6-kcoreaddons-devel
+BuildRequires:  kf6-kpackage-devel
+BuildRequires:  kf6-kio-devel
+BuildRequires:  kf6-ksvg-devel
+BuildRequires:  kf6-karchive-devel
+BuildRequires:  kf6-kiconthemes-devel 
+BuildRequires:  kf6-kcmutils-devel
+BuildRequires:  kf6-kglobalaccel-devel
+BuildRequires:  kf6-kcrash-devel
+BuildRequires:  kf6-kdeclarative-devel
+BuildRequires:  kf6-kdbusaddons-devel
+BuildRequires:  kf6-solid-devel
+BuildRequires:  kf6-knotifications-devel
+BuildRequires:  kf6-kwidgetsaddons-devel
+BuildRequires:  kf6-kirigami-devel
+BuildRequires:  kf6-kirigami-addons-devel
+# Plasma dependencies
+BuildRequires:  plasma-workspace-devel
+BuildRequires:  kwin-devel
+BuildRequires:  kdecoration-devel
+# Qt dependencies
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  qt6-qt5compat-devel
+BuildRequires:  qt6-qtmultimedia-devel
+BuildRequires:  qt6-qtwayland-devel
+BuildRequires:  qt6-qtdeclarative-devel
+# Other dependencies
+BuildRequires:  wayland-devel
+BuildRequires:  plasma-wayland-protocols-devel
+BuildRequires:  libepoxy-devel
+
 # Specific extras for the theme
 Requires:       kvantum
 Requires:       tar
@@ -32,11 +69,53 @@ This is the default theme for Winblues 7.
 %autosetup -n %{name}-%{commit}
 
 %build
-# No build required for themes
+# Build the C++ KWin decoration
+mkdir -p build-decoration
+pushd build-decoration
+%cmake ../kwin/decoration \
+    -G "Unix Makefiles" \
+    -DCMAKE_BUILD_TYPE=Release -B .
+make %{?_smp_mflags}
+popd
+
+# Build C++ KWin effects
+for effect in kwin/effects_cpp/*; do
+    if [ -d "$effect" ] && [ -f "$effect/CMakeLists.txt" ]; then
+        EFFECT_NAME=$(basename "$effect")
+        if [ "$EFFECT_NAME" == "kwin-effect-smodsnap-v2" ] || [ "$EFFECT_NAME" == "smodglow" ]; then
+            continue
+        fi
+
+        mkdir -p build-$EFFECT_NAME
+        pushd build-$EFFECT_NAME
+        %cmake ../$effect \
+            -G "Unix Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release -B .
+        make %{?_smp_mflags}
+        popd
+    fi
+done
 
 %install
 # Clear buildroot
 rm -rf %{buildroot}
+
+# Install C++ KWin decoration
+pushd build-decoration
+%make_install
+popd
+
+# Install C++ KWin effects
+for effect in kwin/effects_cpp/*; do
+    if [ -d "$effect" ] && [ -f "$effect/CMakeLists.txt" ]; then
+        EFFECT_NAME=$(basename "$effect")
+        if [ -d build-$EFFECT_NAME ]; then
+            pushd build-$EFFECT_NAME
+            %make_install
+          popd
+        fi
+    fi
+done
 
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -104,7 +183,7 @@ cp -r plasma/layout-templates/* %{buildroot}%{_datadir}/plasma/layout-templates/
 install -Dm644 misc/fontconfig/fonts.conf \
   %{buildroot}%{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 
-# Install KWin effects directly
+# Install KWin effects directly (JavaScript-based ones)
 for dir in kwin/effects/*; do
   if [ -d "$dir" ]; then
     EFFECT_NAME=$(basename "$dir")
@@ -157,61 +236,9 @@ if [ -d "misc/branding" ]; then
   cp -r misc/branding/* %{buildroot}%{_datadir}/aerotheme/branding/
 fi
 
-# Create default KDE config files
-mkdir -p %{buildroot}%{_sysconfdir}/xdg
-
-# Set default plasma theme
-cat > %{buildroot}%{_sysconfdir}/xdg/plasmarc << 'EOF'
-[Theme]
-name=Seven-Black
-EOF
-
-# Set default color scheme
-cat > %{buildroot}%{_sysconfdir}/xdg/kdeglobals << 'EOF'
-[General]
-ColorScheme=AeroColorScheme1
-Name=Winblues 7
-XftAntialias=true
-XftHintStyle=hintslight
-XftSubPixel=rgb
-fixed=Monospace,10,-1,5,50,0,0,0,0,0
-font=Segoe UI,10,-1,5,50,0,0,0,0,0
-menuFont=Segoe UI,10,-1,5,50,0,0,0,0,0
-smallestReadableFont=Segoe UI,8,-1,5,50,0,0,0,0,0
-toolBarFont=Segoe UI,9,-1,5,50,0,0,0,0,0
-audioTheme=WindowsMedia
-
-[KDE]
-LookAndFeelPackage=authui7
-SingleClick=false
-
-[WM]
-activeFont=Segoe UI,10,-1,5,50,0,0,0,0,0
-EOF
-
-# Set default window decoration
-cat > %{buildroot}%{_sysconfdir}/xdg/kwinrc << 'EOF'
-[org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__Seven-Black
-
-[Plugins]
-blurEnabled=true
-contrastEnabled=false
-EOF
-
-# Set default cursor theme
-cat > %{buildroot}%{_sysconfdir}/xdg/kcminputrc << 'EOF'
-[Mouse]
-cursorTheme=Aero-drop
-EOF
-
-# Set SDDM theme
-mkdir -p %{buildroot}%{_sysconfdir}/sddm.conf.d
-cat > %{buildroot}%{_sysconfdir}/sddm.conf.d/10-aero-theme.conf << 'EOF'
-[Theme]
-Current=aero
-EOF
+# Debug - list all installed files
+echo "Listing all installed files in the buildroot:"
+find %{buildroot} -type f | sort
 
 %post
 # Update mime database
@@ -244,7 +271,9 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/plasma/plasmoids/io.gitgud.wackyideas.*
 %{_datadir}/plasma/plasmoids/org.kde.*
 %{_datadir}/plasma/layout-templates
-%{_datadir}/kwin/effects
+%dir %{_datadir}/kwin/effects
+%dir %{_datadir}/kwin/effects/*
+%{_datadir}/kwin/effects/*/*
 %{_datadir}/kwin/scripts
 %{_datadir}/kwin/tabbox
 %{_datadir}/kwin/outline
@@ -255,13 +284,26 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
-%config(noreplace) %{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
-%config(noreplace) %{_sysconfdir}/xdg/plasmarc
-%config(noreplace) %{_sysconfdir}/xdg/kdeglobals
-%config(noreplace) %{_sysconfdir}/xdg/kwinrc
-%config(noreplace) %{_sysconfdir}/xdg/kcminputrc
-%config(noreplace) %{_sysconfdir}/sddm.conf.d/10-aero-theme.conf
 
+# KDE decoration plugins
+%{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so
+%{_libdir}/qt6/plugins/org.kde.kdecoration3.kcm/kcm_smoddecoration.so
+%{_libdir}/qt6/plugins/kwin/effects/configs/*.so
+%{_libdir}/qt6/plugins/kwin/effects/plugins/*.so
+
+# Include locale files
+%{_datadir}/locale/*/LC_MESSAGES/breeze_kwin_deco.mo
+%{_datadir}/locale/*/LC_MESSAGES/breeze_style_config.mo
+
+# Include development files
+%{_includedir}/SMOD/Decoration/*
+%{_libdir}/pkgconfig/smoddecoration.pc
+
+# Application desktop files
+%{_datadir}/applications/kcm_smoddecoration.desktop
+
+# Config files
+%config(noreplace) %{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 
 %changelog
 * Thu May 08 2025 Adam Fidel <adam@fidel.cloud> - 0-0.1.20250508git3c2990e
