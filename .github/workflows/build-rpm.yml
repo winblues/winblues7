@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       rpm_version: ${{ steps.extract_version.outputs.RPM_VERSION }}
+      rpm_filename: ${{ steps.extract_version.outputs.RPM_FILENAME }}
 
     steps:
     - name: Checkout repository
@@ -45,9 +46,12 @@ jobs:
       id: extract_version
       run: |
         rpm_file=$(find anda-build/rpm/rpms -name '*.rpm' | head -n 1)
+        rpm_filename=$(basename "$rpm_file")
         rpm_version=$(rpm -qp --queryformat '%{NAME}-%{VERSION}-%{RELEASE}' "$rpm_file" 2>/dev/null)
         echo "RPM_VERSION=$rpm_version" >> $GITHUB_OUTPUT
+        echo "RPM_FILENAME=$rpm_filename" >> $GITHUB_OUTPUT
         echo "Extracted RPM version: $rpm_version"
+        echo "Extracted RPM filename: $rpm_filename"
 
     - name: Upload RPM as artifact
       uses: actions/upload-artifact@v4
@@ -66,6 +70,11 @@ jobs:
       with:
         name: RPM
         path: ./rpm-artifacts
+
+    - name: List downloaded files
+      run: |
+        ls -la ./rpm-artifacts/
+        echo "Downloaded files in rpm-artifacts directory"
 
     - name: Create Release
       id: create_release
@@ -86,6 +95,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./rpm-artifacts/*.rpm
-        asset_name: ${{ needs.build-rpm.outputs.rpm_version }}.rpm
+        asset_path: ./rpm-artifacts/${{ needs.build-rpm.outputs.rpm_filename }}
+        asset_name: ${{ needs.build-rpm.outputs.rpm_filename }}
         asset_content_type: application/x-rpm
