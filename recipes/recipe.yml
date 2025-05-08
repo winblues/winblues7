@@ -11,6 +11,11 @@ modules:
       - source: system
         destination: /
 
+  - type: dnf
+    install:
+      packages:
+      - kvantum
+
   - type: script
     snippets:
       - 'cd $CONFIG_DIRECTORY/scripts && for script in *.sh; do [ -f "$script" ] && bash "$script"; done'
