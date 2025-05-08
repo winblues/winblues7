@@ -8,7 +8,7 @@ A Windows 7 inspired bootable container built with [Bazzite](https://github.com/
 
 This project is in alpha. Many of the components from AeroThemePlasma are installed but not configured. Some components are not installed at all. There are many rough edges.
 
-## Installtion
+## Installation
 
 1. Install [Bazzite](https://bazzite.gg) using their ISO.
 2. Rebase to this image:
