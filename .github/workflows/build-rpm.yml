@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - pkgs/aerothemeplasma/aerothemeplasma.spec
+  workflow_dispatch:
 
 jobs:
   build-rpm:
