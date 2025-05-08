@@ -10,6 +10,10 @@ modules:
     files:
       - source: system
         destination: /
+  - type: dnf
+    install:
+      packages:
+      - https://github.com/winblues/blue7/releases/download/aerothemeplasma-0-0.1.20250423git3c2990e.fc42/aerothemeplasma-0-0.1.20250423git3c2990e.fc42.x86_64.rpm
 
   - type: script
     snippets:
