@@ -18,7 +18,7 @@ modules:
 
   - type: script
     snippets:
-      - 'cd $CONFIG_DIRECTORY/scripts && for script in *.sh; do [ -f "$script" ] && bash "$script"; done'
+      - 'cd $CONFIG_DIRECTORY/scripts && for script in *.sh; do [ -f "$script" ] && bash "$script" || exit $?; done'
 
   - type: signing
 
