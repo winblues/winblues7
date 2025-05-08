@@ -13,6 +13,31 @@ License:        AGPLv3
 URL:            https://gitgud.io/wackyideas/aerothemeplasma
 Source0:        https://gitgud.io/wackyideas/%{name}/-/archive/%{commit}/%{name}-%{commit}.zip
 
+# Build requirements for C++ components
+BuildRequires:  cmake >= 3.16
+BuildRequires:  extra-cmake-modules
+BuildRequires:  gcc-c++
+BuildRequires:  ninja-build
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  qt6-qtdeclarative-devel
+BuildRequires:  qt6-qtsvg-devel
+BuildRequires:  qt6-qt5compat-devel
+BuildRequires:  kf6-ki18n-devel
+BuildRequires:  kf6-kconfigwidgets-devel
+BuildRequires:  kf6-kcoreaddons-devel
+BuildRequires:  kf6-kguiaddons-devel
+BuildRequires:  kf6-kiconthemes-devel
+BuildRequires:  kf6-kservice-devel
+BuildRequires:  kf6-kconfig-devel
+BuildRequires:  kf6-kcmutils-devel
+BuildRequires:  kf6-kpackage-devel
+BuildRequires:  kf6-kwindowsystem-devel
+BuildRequires:  kdecoration-devel
+BuildRequires:  kwin-devel
+BuildRequires:  plasma-framework-devel
+BuildRequires:  kf6-kdeclarative-devel
+
 # KDE6 Dependencies
 Requires:       plasma-workspace
 Requires:       plasma-desktop
@@ -32,11 +57,47 @@ This is the default theme for Winblues 7.
 %autosetup -n %{name}-%{commit}
 
 %build
-# No build required for themes
+# Build the C++ KWin decoration
+mkdir -p build-decoration
+pushd build-decoration
+%cmake ../kwin/decoration \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release
+%ninja_build
+popd
+
+# Build C++ KWin effects
+for effect in kwin/effects_cpp/*; do
+    if [ -d "$effect" ] && [ -f "$effect/CMakeLists.txt" ]; then
+        EFFECT_NAME=$(basename "$effect")
+        mkdir -p build-$EFFECT_NAME
+        pushd build-$EFFECT_NAME
+        %cmake ../$effect \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release
+        %ninja_build
+        popd
+    fi
+done
 
 %install
 # Clear buildroot
 rm -rf %{buildroot}
+
+# Install C++ KWin decoration
+pushd build-decoration
+%ninja_install
+popd
+
+# Install C++ KWin effects
+for effect in kwin/effects_cpp/*; do
+    if [ -d "$effect" ] && [ -f "$effect/CMakeLists.txt" ]; then
+        EFFECT_NAME=$(basename "$effect")
+        pushd build-$EFFECT_NAME
+        %ninja_install
+        popd
+    fi
+done
 
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -104,7 +165,7 @@ cp -r plasma/layout-templates/* %{buildroot}%{_datadir}/plasma/layout-templates/
 install -Dm644 misc/fontconfig/fonts.conf \
   %{buildroot}%{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 
-# Install KWin effects directly
+# Install KWin effects directly (JavaScript-based ones)
 for dir in kwin/effects/*; do
   if [ -d "$dir" ]; then
     EFFECT_NAME=$(basename "$dir")
@@ -192,8 +253,8 @@ EOF
 # Set default window decoration
 cat > %{buildroot}%{_sysconfdir}/xdg/kwinrc << 'EOF'
 [org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__Seven-Black
+library=org.smod.smod
+theme=
 
 [Plugins]
 blurEnabled=true
@@ -255,6 +316,12 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
+%{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so
+%{_libdir}/qt6/plugins/kwin/effects/*.so
+%{_datadir}/kwin/effects/*/
+%{_datadir}/kpackage/KWin/Effect/*
+%{_datadir}/locale/*/LC_MESSAGES/breeze_kwin_deco.mo
+%{_datadir}/locale/*/LC_MESSAGES/smod_deco.mo
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/99-aerotheme-segoe.conf
 %config(noreplace) %{_sysconfdir}/xdg/plasmarc
 %config(noreplace) %{_sysconfdir}/xdg/kdeglobals
