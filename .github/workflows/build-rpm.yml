@@ -6,9 +6,11 @@ on:
   push:
     paths:
       - pkgs/aerothemeplasma/aerothemeplasma.spec
+      - .github/workflows/build-rpm.yml
   pull_request:
     paths:
       - pkgs/aerothemeplasma/aerothemeplasma.spec
+      - .github/workflows/build-rpm.yml
   workflow_dispatch:
 
 jobs:
@@ -43,7 +45,7 @@ jobs:
       run: |
         rpm_file=$(find anda-build/rpm/rpms -name '*.rpm' | head -n 1)
         rpm_version=$(rpm -qp --queryformat '%{NAME}-%{VERSION}-%{RELEASE}' "$rpm_file" 2>/dev/null)
-        echo "RPM_VERSION=$rpm_version" >> $GITHUB_ENV
+        echo "RPM_VERSION=$rpm_version" >> $GITHUB_OUTPUT
         echo "Extracted RPM version: $rpm_version"
 
     - name: Upload RPM as artifact
@@ -70,8 +72,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.RPM_VERSION }}
-        release_name: AeroTheme RPM Build ${{ env.RPM_VERSION }}
+        tag_name: ${{ steps.extract_version.outputs.RPM_VERSION }}
+        release_name: AeroTheme RPM Build ${{ steps.extract_version.outputs.RPM_VERSION }}
         body: |
           This release contains the RPM build for AeroThemePlasma.
         draft: false
