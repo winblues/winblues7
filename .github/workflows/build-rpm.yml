@@ -3,6 +3,8 @@ permissions:
   contents: write
 on:
   push:
+    branches:
+      - main
     paths:
       - pkgs/aerothemeplasma/aerothemeplasma.spec
       - .github/workflows/build-rpm.yml
@@ -62,6 +64,8 @@ jobs:
   create-release:
     name: Create GitHub Release
     needs: build-rpm
+    # Only run this job on main branch or manual workflow trigger
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
