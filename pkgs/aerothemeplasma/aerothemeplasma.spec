@@ -2,7 +2,7 @@
 
 %global commit 3c2990e202d67be2a383581eb491ef74e7ffaf5d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250423
+%global commitdate 20250507
 
 Name:           aerothemeplasma
 Version:        0
@@ -56,12 +56,12 @@ Source0:        https://gitgud.io/wackyideas/%{name}/-/archive/%{commit}/%{name}
 #BuildRequires:  libepoxy-devel
 
 # Runtime dependencies
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-Requires:       kpackagetool6
-Requires:       sddmthemeinstaller
-Requires:       tar
-Requires:       unzip
-Requires:       kfontinst
+#Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+#Requires:       kpackagetool6
+#Requires:       sddmthemeinstaller
+#Requires:       tar
+#Requires:       unzip
+#Requires:       kfontinst
 
 %description
 AeroThemePlasma is a KDE Plasma desktop customization that mimics the visual style of Windows 7, including cursors, sounds, color schemes, KWin effects, and SDDM theme.
