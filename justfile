@@ -4,7 +4,7 @@ rebase:
 
 build:
   #!/bin/bash
-  bluebuild build --tempdir /var/tmp recipes/recipe.yml
+  bluebuild build -B podman --tempdir /var/tmp recipes/recipe.yml
 
 build-rpm:
   #!/bin/bash
