@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit 3c2990e202d67be2a383581eb491ef74e7ffaf5d
+%global commit 47f93128ad01e672807363b98e345d4dfd799883
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250509
+%global commitdate 20250508
 
 Name:           aerothemeplasma
 Version:        0
@@ -59,6 +59,7 @@ BuildRequires:  libepoxy-devel
 Requires:       kvantum
 Requires:       tar
 Requires:       unzip
+Requires:       kf6-frameworkintegration
 
 %description
 AeroThemePlasma is a KDE Plasma desktop customization that mimics the visual style of 
