@@ -2,7 +2,7 @@
 
 A Windows 7 inspired bootable container built with [Bazzite](https://github.com/ublue-os/bazzite) and [AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma).
 
-![Screenshot_20250508_114709](https://github.com/user-attachments/assets/48a3289f-c612-426a-83a2-093b7942d279)
+![image](https://github.com/user-attachments/assets/c075929e-b545-446c-b560-c27fdf8de83d)
 
 
 ## Project Status
