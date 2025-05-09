@@ -1,9 +1,8 @@
 # Winblues 7
 
-A Windows 7 inspired bootable container built with [Bazzite](https://github.com/ublue-os/bazzite) and [AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma).
+A bootable container built on top of [Bazzite](https://github.com/ublue-os/bazzite) and [AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma).
 
-![image](https://github.com/user-attachments/assets/50507376-38b5-4f42-867b-630281868b02)
-
+![image](https://github.com/user-attachments/assets/c7f93eee-f4a0-47e0-aff1-bc4f0de7641b)
 
 ## Project Status
 
