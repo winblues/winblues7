@@ -1,7 +1,15 @@
 [org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=__aurorae__svg__Seven-Black
+library=org.smod.smod
+theme=
+BorderSize=Normal
+ButtonsOnLeft=MS
+ButtonsOnRight=HIAX
+CloseOnDoubleClickOnMenu=false
+ShowToolTips=true
 
 [Plugins]
 blurEnabled=true
-contrastEnabled=false
+kwin4_effect_fadedesktopEnabled=true
+kwin4_effect_fadeEnabled=true
+kwin4_effect_scaleEnabled=true
+kwin4_effect_squashEnabled=true

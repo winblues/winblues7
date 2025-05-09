@@ -19,4 +19,5 @@ sudo bootc switch ghcr.io/winblues/blue7:latest
 
 
 ## Attribution:
-- Project logo: https://www.reddit.com/r/FrutigerAero/comments/110sgm7/msn_avatars_of_all_colors/
+- Wallpaper based on work by [KosZigler](https://www.deviantart.com/koszigler/art/Windows-7-Harmony-Style-Wallpaper-Like-Logon-700520270).
+- Project logo from Reddit user [Acz___](https://www.reddit.com/r/FrutigerAero/comments/110sgm7/msn_avatars_of_all_colors/).
