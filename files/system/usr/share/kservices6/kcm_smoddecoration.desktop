@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=SMOD Window Decoration
+Comment=Configure Windows 7 style window decorations
+Exec=kcmshell6 kcm_smoddecoration
+Icon=preferences-system-windows
+Type=Service
+X-KDE-ServiceTypes=KCModule
+X-KDE-Library=org.kde.kdecoration3.kcm/kcm_smoddecoration
+X-KDE-ParentApp=kcontrol
+X-KDE-System-Settings-Parent-Category=windowmanagement
+X-KDE-Weight=60
+X-KDE-PluginInfo-Name=kcm_smoddecoration
+Categories=Qt;KDE;X-KDE-settings-looknfeel;

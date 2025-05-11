@@ -118,6 +118,10 @@ for effect in kwin/effects_cpp/*; do
     fi
 done
 
+# Install SMOD window decoration resource file
+mkdir -p %{buildroot}%{_datadir}/smod/decorations
+cp -r plasma/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
+
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
 mkdir -p %{buildroot}%{_datadir}/sounds
@@ -285,6 +289,7 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
+%{_datadir}/smod/decorations/
 
 # KDE decoration plugins
 %{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=SMOD Window Decoration
+Comment=Configure Windows 7 style window decorations
+Exec=kcmshell6 kcm_smoddecoration
+Icon=preferences-system-windows
+Categories=Qt;KDE;Settings;LookAndFeel;
