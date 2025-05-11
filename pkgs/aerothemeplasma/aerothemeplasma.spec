@@ -2,7 +2,7 @@
 
 %global commit 47f93128ad01e672807363b98e345d4dfd799883
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250508
+%global commitdate 20250511
 
 Name:           aerothemeplasma
 Version:        0
