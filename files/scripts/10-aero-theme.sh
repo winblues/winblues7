@@ -15,3 +15,5 @@ cd /tmp/winblues7-overlay && \
 cp -rf /tmp/winblues7-overlay/usr/* /usr/ && \
     cp -rf /tmp/winblues7-overlay/etc/* /etc/ && \
     rm -rf /tmp/winblues7-overlay /tmp/*.rpm
+
+kbuildsycoca6

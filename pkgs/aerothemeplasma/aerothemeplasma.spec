@@ -2,7 +2,7 @@
 
 %global commit 47f93128ad01e672807363b98e345d4dfd799883
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250508
+%global commitdate 20250511
 
 Name:           aerothemeplasma
 Version:        0
@@ -117,6 +117,10 @@ for effect in kwin/effects_cpp/*; do
         fi
     fi
 done
+
+# Install SMOD window decoration resource file
+mkdir -p %{buildroot}%{_datadir}/smod/decorations
+cp -r plasma/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
 
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -285,6 +289,7 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/color-schemes/AeroColorScheme1.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
+%{_datadir}/smod/decorations/
 
 # KDE decoration plugins
 %{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so
