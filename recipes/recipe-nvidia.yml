@@ -6,11 +6,6 @@ base-image: ghcr.io/ublue-os/bazzite-dx-nvidia-open
 image-version: latest
 
 modules:
-  - type: files
-    files:
-      - source: system
-        destination: /
-
   - type: dnf
     install:
       packages:
@@ -20,6 +15,11 @@ modules:
   - type: script
     snippets:
       - 'cd $CONFIG_DIRECTORY/scripts && for script in *.sh; do [ -f "$script" ] && bash "$script" || exit $?; done'
+
+  - type: files
+    files:
+      - source: system
+        destination: /
 
   # Regenerate initramfs because of plymouth
   - type: initramfs
