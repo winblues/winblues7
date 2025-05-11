@@ -1,8 +1,8 @@
 ---
-name: blue7
+name: blue7-nvidia
 description: Winblues 7
 
-base-image: ghcr.io/ublue-os/bazzite-dx
+base-image: ghcr.io/ublue-os/bazzite-dx-nvidia-open
 image-version: latest
 
 modules:
