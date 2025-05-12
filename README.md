@@ -19,12 +19,12 @@ This project is in alpha. Many of the components from AeroThemePlasma are instal
 
 **For NVIDIA**
 ```bash
-sudo bootc switch ghcr.io/winblues/blue7-nvidia:latest
+sudo bootc switch ghcr.io/winblues/winblues7-nvidia:latest
 ``` 
 
 **For Intel/AMD**
 ```bash
-sudo bootc switch ghcr.io/winblues/blue7:latest
+sudo bootc switch ghcr.io/winblues/winblues7:latest
 ``` 
 
 ## Attribution:
