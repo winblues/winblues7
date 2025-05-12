@@ -1,3 +1,5 @@
+<img src="./files/system/usr/share/pixmaps/system-logo-white.png"  align="right" height="60" />
+
 # Winblues 7
 
 A bootable container built on top of [Bazzite](https://github.com/ublue-os/bazzite) and [AeroThemePlasma](https://gitgud.io/wackyideas/aerothemeplasma).
