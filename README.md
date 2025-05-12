@@ -4,6 +4,8 @@ A bootable container built on top of [Bazzite](https://github.com/ublue-os/bazzi
 
 ![image](https://github.com/user-attachments/assets/c7f93eee-f4a0-47e0-aff1-bc4f0de7641b)
 
+For more screenshots, see [SCREENSHOTS.md](SCREENSHOTS.md).
+
 ## Project Status
 
 This project is in alpha. Many of the components from AeroThemePlasma are installed but not configured. Some components are not installed at all. There are many rough edges.
