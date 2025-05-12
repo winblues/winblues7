@@ -27,6 +27,14 @@ sudo bootc switch ghcr.io/winblues/blue7:latest
 - Wallpaper based on work by [KosZigler](https://www.deviantart.com/koszigler/art/Windows-7-Harmony-Style-Wallpaper-Like-Logon-700520270).
 - Project logo from Reddit user [Acz___](https://www.reddit.com/r/FrutigerAero/comments/110sgm7/msn_avatars_of_all_colors/).
 
-## Disclaimer
+## Licensing
 
-Microsoft® Windows™ is a registered trademark of Microsoft® Corporation. This name is used for referential use only, and does not aim to usurp copyrights from Microsoft. Microsoft © 2025 All rights reserved. All resources belong to Microsoft Corporation.
+### Project Code & Configurations
+All original code, workflows, configurations, and documentation in this repository are licensed under the [Apache License 2.0](LICENSE).
+
+### Third-Party Assets
+This project contains visual and audio elements that resemble Microsoft® Windows™ 7. These assets are used for nostalgic and illustrative purposes only:
+
+Microsoft® Windows™ is a registered trademark of Microsoft Corporation. This project is not affiliated with, endorsed by, or sponsored by Microsoft. All Microsoft trademarks, service marks, trade names, and product names are the property of Microsoft Corporation.
+
+This project does not distribute any copyrighted Microsoft binaries or code. Any similarity to Microsoft products is for interoperability, educational, and nostalgic purposes only.
