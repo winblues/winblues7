@@ -1,5 +1,5 @@
 ---
-name: blue7
+name: winblues7
 description: Winblues 7
 
 base-image: ghcr.io/ublue-os/bazzite-dx

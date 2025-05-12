@@ -1,5 +1,5 @@
 ---
-name: blue7-nvidia
+name: winblues7-nvidia
 description: Winblues 7
 
 base-image: ghcr.io/ublue-os/bazzite-dx-nvidia-open
