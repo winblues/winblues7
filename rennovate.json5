@@ -1,0 +1,16 @@
+{
+  "regexManagers": [
+    {
+      "fileMatch": ["^pkgs/aerothemeplasma/aerothemeplasma\\.spec$"],
+      "matchStrings": [
+        "%global commit (?<currentValue>[0-9a-f]{40})",
+        "%global commitdate (?<currentValue>[0-9]{8})"
+      ],
+      "depNameTemplate": "aerothemeplasma-git-commit",
+      "datasourceTemplate": "git-commits",
+      "packageNameTemplate": "wackyideas/aerothemeplasma",
+      "versioningTemplate": "loose"
+    }
+  ]
+}
+
