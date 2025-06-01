@@ -3,14 +3,12 @@
     {
       "fileMatch": ["^pkgs/aerothemeplasma/aerothemeplasma\\.spec$"],
       "matchStrings": [
-        "%global commit (?<currentValue>[0-9a-f]{40})",
-        "%global commitdate (?<currentValue>[0-9]{8})"
+        "%global commit (?<currentValue>[0-9a-f]{40})"
       ],
-      "depNameTemplate": "aerothemeplasma-git-commit",
-      "datasourceTemplate": "git-commits",
-      "packageNameTemplate": "wackyideas/aerothemeplasma",
+      "depNameTemplate": "aerothemeplasma-upstream-commit",
+      "datasourceTemplate": "file",
+      "packageFileTemplate": "https://raw.githubusercontent.com/winblues/winblues7/aerothemeplasma-upstream-commit/upstream-commit.txt",
       "versioningTemplate": "loose"
     }
   ]
 }
-

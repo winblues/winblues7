@@ -34,10 +34,8 @@ jobs:
           git clone --depth=1 https://gitgud.io/wackyideas/aerothemeplasma.git upstream-repo
           cd upstream-repo
           SHA=$(git rev-parse HEAD)
-          DATE=$(git show -s --format=%cd --date=format:%Y%m%d HEAD)
           cd ..
-          echo "commit: $SHA" > $FILE
-          echo "date: $DATE" >> $FILE
+          echo "$SHA" > $FILE
           cat $FILE
 
       - name: Commit and force-push
