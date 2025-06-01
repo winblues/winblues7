@@ -1,0 +1,44 @@
+name: Update Upstream Commit Reference
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *' # runs daily at 02:00 UTC
+
+jobs:
+  update-upstream-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo (default branch)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set variables
+        run: |
+          echo "BRANCH=aerothemeplasma-upstream-commit" >> $GITHUB_ENV
+          echo "FILE=upstream-commit.txt" >> $GITHUB_ENV
+
+      - name: Fetch latest upstream commit info
+        run: |
+          git clone --depth=1 https://gitgud.io/wackyideas/aerothemeplasma.git upstream-repo
+          cd upstream-repo
+          SHA=$(git rev-parse HEAD)
+          DATE=$(git show -s --format=%cd --date=format:%Y%m%d HEAD)
+          cd ..
+          echo "commit: $SHA" > $FILE
+          echo "date: $DATE" >> $FILE
+          cat $FILE
+
+      - name: Prepare orphan branch
+        run: |
+          git fetch origin $BRANCH || true
+          git checkout --orphan $BRANCH || git switch $BRANCH
+          git reset --hard
+          git clean -fdx
+          mv $FILE .
+          git add $FILE
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update upstream commit info"
+          git push origin $BRANCH --force
