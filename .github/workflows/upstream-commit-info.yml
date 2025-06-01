@@ -19,7 +19,14 @@ jobs:
           echo "BRANCH=aerothemeplasma-upstream-commit" >> $GITHUB_ENV
           echo "FILE=upstream-commit.txt" >> $GITHUB_ENV
 
-      - name: Fetch latest upstream commit info
+      - name: Prepare orphan branch
+        run: |
+          git fetch origin $BRANCH || true
+          git checkout --orphan $BRANCH || git switch $BRANCH
+          git reset --hard
+          git clean -fdx
+
+      - name: Fetch latest upstream commit info and save
         run: |
           git clone --depth=1 https://gitgud.io/wackyideas/aerothemeplasma.git upstream-repo
           cd upstream-repo
@@ -30,15 +37,11 @@ jobs:
           echo "date: $DATE" >> $FILE
           cat $FILE
 
-      - name: Prepare orphan branch
+      - name: Commit and force-push
         run: |
-          git fetch origin $BRANCH || true
-          git checkout --orphan $BRANCH || git switch $BRANCH
-          git reset --hard
-          git clean -fdx
-          mv $FILE .
           git add $FILE
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Update upstream commit info"
+          git commit -m "Update upstream commit info" || echo "Nothing to commit"
           git push origin $BRANCH --force
+
