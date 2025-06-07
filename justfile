@@ -10,3 +10,8 @@ build-rpm:
   #!/bin/bash
   podman run --rm --cap-add=SYS_ADMIN --privileged --volume ./:/anda --volume mock_cache:/var/lib/mock --workdir /anda ghcr.io/terrapkg/builder:f42 anda \
       build -c terra-42-x86_64 pkgs/aerothemeplasma/pkg
+
+get-rpm-version:
+  #!/bin/bash
+  SHA=$(git show origin/aerothemeplasma-upstream-commit:upstream-commit.txt)
+  echo $SHA
