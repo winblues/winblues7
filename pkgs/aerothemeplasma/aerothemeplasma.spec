@@ -2,7 +2,7 @@
 
 %global commit 3f1765073a24d568a600c5da21ff604e173821a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250607
+%global commitdate 20250611
 
 Name:           aerothemeplasma
 Version:        0
@@ -167,6 +167,10 @@ install -Dm644 plasma/color_scheme/AeroColorScheme1.colors \
 mkdir -p %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black
 cp -r plasma/desktoptheme/Seven-Black/* %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black/
 
+# Install shell overrides (including custom lock screen)
+mkdir -p %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop
+cp -r plasma/shells/org.kde.plasma.desktop/* %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/
+
 # Install look-and-feel
 mkdir -p %{buildroot}%{_datadir}/plasma/look-and-feel/authui7
 cp -r plasma/look-and-feel/authui7/* %{buildroot}%{_datadir}/plasma/look-and-feel/authui7/
@@ -272,6 +276,7 @@ kbuildsycoca6 &> /dev/null || :
 %license LICENSE
 %doc README.md INSTALL.md
 %{_datadir}/plasma/desktoptheme/Seven-Black
+%{_datadir}/plasma/shells/org.kde.plasma.desktop
 %{_datadir}/plasma/look-and-feel/authui7
 %{_datadir}/plasma/plasmoids/io.gitgud.wackyideas.*
 %{_datadir}/plasma/plasmoids/org.kde.*
