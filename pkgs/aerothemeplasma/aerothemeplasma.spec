@@ -54,6 +54,7 @@ BuildRequires:  qt6-qtdeclarative-devel
 BuildRequires:  wayland-devel
 BuildRequires:  plasma-wayland-protocols-devel
 BuildRequires:  libepoxy-devel
+BuildRequires:  libdrm-devel
 
 # Specific extras for the theme
 Requires:       kvantum

@@ -42,7 +42,7 @@ jobs:
           --volume ${{ github.workspace }}:/anda \
           --volume mock_cache:/var/lib/mock \
           --workdir /anda \
-          ghcr.io/terrapkg/builder:f42 anda build -c terra-42-x86_64 pkgs/aerothemeplasma/pkg
+          ghcr.io/terrapkg/builder:f43 anda build -c terra-43-x86_64 pkgs/aerothemeplasma/pkg
 
     - name: Extract RPM Version
       id: extract_version
