@@ -38,24 +38,43 @@ BuildRequires:  kf6-knotifications-devel
 BuildRequires:  kf6-kwidgetsaddons-devel
 BuildRequires:  kf6-kirigami-devel
 BuildRequires:  kf6-kirigami-addons-devel
+BuildRequires:  gmp-ecm-devel 
+BuildRequires:  kf6-knewstuff-devel 
+BuildRequires:  kf6-knotifyconfig-devel 
+BuildRequires:  kf6-attica-devel 
+BuildRequires:  kf6-krunner-devel 
+BuildRequires:  kf6-sonnet-devel 
+BuildRequires:  kf6-kitemmodels-devel 
+BuildRequires:  kf6-kstatusnotifieritem-devel
+BuildRequires:  kf6-qqc2-desktop-style
 # Plasma dependencies
 BuildRequires:  plasma-workspace-devel
 BuildRequires:  kwin-devel
 BuildRequires:  kwin-x11-devel
 BuildRequires:  kdecoration-devel
+BuildRequires:  libplasma-devel 
+BuildRequires:  plasma-activities-devel 
+BuildRequires:  plasma-wayland-protocols 
+BuildRequires:  kf5-plasma-devel
+BuildRequires:  plasma5support-devel 
+BuildRequires:  plasma-activities-stats-devel 
 # Qt dependencies
+BuildRequires:  qt-devel 
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qt5compat-devel
 BuildRequires:  qt6-qtmultimedia-devel
 BuildRequires:  qt6-qtwayland-devel
-BuildRequires:  qt6-qtdeclarative-devel
+BuildRequires:  qt6-qtdeclarative-devel 
+BuildRequires:  qt6-qt5compat-devel 
+BuildRequires:  qt6-qtwayland-devel
 # Other dependencies
 BuildRequires:  wayland-devel
 BuildRequires:  plasma-wayland-protocols-devel
 BuildRequires:  libepoxy-devel
 BuildRequires:  libdrm-devel
+BuildRequires:  polkit-qt6-1-devel 
 
 # Specific extras for the theme
 Requires:       kvantum
@@ -100,6 +119,20 @@ for effect in kwin/effects_cpp/*; do
     fi
 done
 
+# Build plasmoids
+for plasmoid in plasma/plasmoids/src/*; do
+    if [ -d "$plasmoid" ] && [ -f "$plasmoid/CMakeLists.txt" ]; then
+        PLASMOID_NAME=$(basename "$plasmoid")
+        mkdir -p build-$PLASMOID_NAME
+        pushd build-$PLASMOID_NAME
+        %cmake ../$plasmoid \
+            -G "Unix Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release -B .
+        make %{?_smp_mflags}
+        popd
+    fi
+done
+
 %install
 # Clear buildroot
 rm -rf %{buildroot}
@@ -115,6 +148,18 @@ for effect in kwin/effects_cpp/*; do
         EFFECT_NAME=$(basename "$effect")
         if [ -d build-$EFFECT_NAME ]; then
             pushd build-$EFFECT_NAME
+            %make_install
+          popd
+        fi
+    fi
+done
+
+#install compiled plasmoids
+for plasmoid in plasma/plasmoids/src/*; do
+    if [ -d "$plasmoid" ] && [ -f "$plasmoid/CMakeLists.txt" ]; then
+        PLASMOID_NAME=$(basename "$plasmoid")
+        if [ -d build-$PLASMOID_NAME ]; then
+            pushd build-$PLASMOID_NAME
             %make_install
           popd
         fi
@@ -304,6 +349,10 @@ kbuildsycoca6 &> /dev/null || :
 %{_libdir}/qt6/plugins/org.kde.kdecoration3.kcm/kcm_smoddecoration.so
 %{_libdir}/qt6/plugins/kwin/effects/configs/*.so
 %{_libdir}/qt6/plugins/kwin/effects/plugins/*.so
+
+# Compiled plasmoids
+%{_libdir}/qt6/plugins/plasma/applets/io.gitgud.wackyideas.*.so
+%{_libdir}/qt6/qml/io/gitgud/wackyideas/*
 
 # Include locale files
 %{_datadir}/locale/*/LC_MESSAGES/breeze_kwin_deco.mo
