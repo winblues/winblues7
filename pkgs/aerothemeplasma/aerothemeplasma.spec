@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit 3f1765073a24d568a600c5da21ff604e173821a1
+%global commit 5680d72d7cfe642fcefbe55681e7955b22e1a63e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250611
+%global commitdate 20251226
 
 Name:           aerothemeplasma
 Version:        0
@@ -41,6 +41,7 @@ BuildRequires:  kf6-kirigami-addons-devel
 # Plasma dependencies
 BuildRequires:  plasma-workspace-devel
 BuildRequires:  kwin-devel
+BuildRequires:  kwin-x11-devel
 BuildRequires:  kdecoration-devel
 # Qt dependencies
 BuildRequires:  qt6-qtbase-devel
@@ -92,6 +93,7 @@ for effect in kwin/effects_cpp/*; do
         pushd build-$EFFECT_NAME
         %cmake ../$effect \
             -G "Unix Makefiles" \
+            -DKWIN_BUILD_WAYLAND=ON \
             -DCMAKE_BUILD_TYPE=Release -B .
         make %{?_smp_mflags}
         popd
@@ -121,7 +123,7 @@ done
 
 # Install SMOD window decoration resource file
 mkdir -p %{buildroot}%{_datadir}/smod/decorations
-cp -r plasma/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
+cp -r kwin/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
 
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -161,16 +163,16 @@ tar -xf "misc/icons/Windows 7 Aero.tar.gz" -C %{buildroot}%{_datadir}/icons
 tar -xf misc/cursors/aero-drop.tar.gz -C %{buildroot}%{_datadir}/icons
 
 # Install color scheme
-install -Dm644 plasma/color_scheme/AeroColorScheme1.colors \
-  %{buildroot}%{_datadir}/color-schemes/AeroColorScheme1.colors
+install -Dm644 plasma/color_scheme/Aero.colors \
+  %{buildroot}%{_datadir}/color-schemes/Aero.colors
 
 # Install plasma desktop theme
 mkdir -p %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black
 cp -r plasma/desktoptheme/Seven-Black/* %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black/
 
 # Install shell overrides (including custom lock screen)
-mkdir -p %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop
-cp -r plasma/shells/org.kde.plasma.desktop/* %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/
+mkdir -p %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
+cp -r plasma/shells/io.gitgud.wackyideas.desktop/* %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop/
 
 # Install look-and-feel
 mkdir -p %{buildroot}%{_datadir}/plasma/look-and-feel/authui7
@@ -277,10 +279,10 @@ kbuildsycoca6 &> /dev/null || :
 %license LICENSE
 %doc README.md INSTALL.md
 %{_datadir}/plasma/desktoptheme/Seven-Black
-%{_datadir}/plasma/shells/org.kde.plasma.desktop
+%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
 %{_datadir}/plasma/look-and-feel/authui7
 %{_datadir}/plasma/plasmoids/io.gitgud.wackyideas.*
-%{_datadir}/plasma/plasmoids/org.kde.*
+# %{_datadir}/plasma/plasmoids/org.kde.*
 %{_datadir}/plasma/layout-templates
 %dir %{_datadir}/kwin/effects
 %dir %{_datadir}/kwin/effects/*
@@ -292,7 +294,7 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/Kvantum
 %{_datadir}/sounds/*
 %{_datadir}/icons/*
-%{_datadir}/color-schemes/AeroColorScheme1.colors
+%{_datadir}/color-schemes/Aero.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
 %{_datadir}/smod/decorations/
