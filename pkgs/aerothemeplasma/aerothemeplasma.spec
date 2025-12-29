@@ -6,7 +6,7 @@
 
 Name:           aerothemeplasma
 Version:        0
-Release:        0.3.%{commitdate}git%{shortcommit}%{?dist}
+Release:        0.4.%{commitdate}git%{shortcommit}%{?dist}
 Summary:        Windows 7-inspired KDE Plasma desktop theme
 
 License:        AGPLv3
