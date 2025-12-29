@@ -235,8 +235,8 @@ mkdir -p %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black
 cp -r plasma/desktoptheme/Seven-Black/* %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black/
 
 # Install shell overrides (including custom lock screen)
-mkdir -p %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop
-cp -r plasma/shells/io.gitgud.wackyideas.desktop/* %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/
+mkdir -p %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
+cp -r plasma/shells/io.gitgud.wackyideas.desktop/* %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop/
 
 # Install look-and-feel
 mkdir -p %{buildroot}%{_datadir}/plasma/look-and-feel/authui7
@@ -343,7 +343,7 @@ kbuildsycoca6 &> /dev/null || :
 %license LICENSE
 %doc README.md INSTALL.md
 %{_datadir}/plasma/desktoptheme/Seven-Black
-%{_datadir}/plasma/shells/org.kde.plasma.desktop
+%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
 %{_datadir}/plasma/look-and-feel/authui7
 %{_datadir}/plasma/plasmoids/io.gitgud.wackyideas.*
 # %{_datadir}/plasma/plasmoids/org.kde.*
