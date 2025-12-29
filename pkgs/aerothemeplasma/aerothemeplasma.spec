@@ -133,15 +133,6 @@ for plasmoid in plasma/plasmoids/src/*; do
     fi
 done
 
-#Build kcmloader
-mkdir -p build-kcmloader
-pushd build-kcmloader
-%cmake ../plasma/aerothemeplasma-kcmloader \
-    -G "Unix Makefiles" \
-    -DCMAKE_BUILD_TYPE=Release -B .
-make %{?_smp_mflags}
-popd
-
 %install
 # Clear buildroot
 rm -rf %{buildroot}
@@ -174,11 +165,6 @@ for plasmoid in plasma/plasmoids/src/*; do
         fi
     fi
 done
-
-#Install kcmloader
-pushd build-kcmloader
-%make_install
-popd
 
 # Install SMOD window decoration resource file
 mkdir -p %{buildroot}%{_datadir}/smod/decorations
@@ -362,7 +348,6 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
 %{_datadir}/smod/*
-%{_bindir}/aerothemeplasma-kcmloader
 
 # KDE decoration plugins
 %{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so
