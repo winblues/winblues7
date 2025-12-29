@@ -17,4 +17,4 @@ cp -rf /tmp/winblues7-overlay/usr/* /usr/ &&
   rm -rf /tmp/winblues7-overlay /tmp/*.rpm
 
 kbuildsycoca6
-
+update-mime-database /usr/share/mime
