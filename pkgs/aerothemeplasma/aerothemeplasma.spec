@@ -184,6 +184,11 @@ popd
 mkdir -p %{buildroot}%{_datadir}/smod/decorations
 cp -r kwin/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
 
+# Install remaining SMOD files
+mkdir -p %{buildroot}%{_datadir}/smod/kwin
+cp -r kwin/smod/kwin/*.png %{buildroot}%{_datadir}/smod/kwin/
+cp -r kwin/smod/snapeffecttextures.smod.rcc %{buildroot}%{_datadir}/smod/
+
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
 mkdir -p %{buildroot}%{_datadir}/sounds
@@ -356,7 +361,7 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/color-schemes/Aero.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
-%{_datadir}/smod/decorations/
+%{_datadir}/smod/*
 %{_bindir}/aerothemeplasma-kcmloader
 
 # KDE decoration plugins
