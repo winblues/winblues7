@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 
-%global commit 3f1765073a24d568a600c5da21ff604e173821a1
+%global commit 5680d72d7cfe642fcefbe55681e7955b22e1a63e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global commitdate 20250611
+%global commitdate 20251226
 
 Name:           aerothemeplasma
 Version:        0
-Release:        0.1.%{commitdate}git%{shortcommit}%{?dist}
+Release:        0.7.%{commitdate}git%{shortcommit}%{?dist}
 Summary:        Windows 7-inspired KDE Plasma desktop theme
 
 License:        AGPLv3
@@ -38,23 +38,43 @@ BuildRequires:  kf6-knotifications-devel
 BuildRequires:  kf6-kwidgetsaddons-devel
 BuildRequires:  kf6-kirigami-devel
 BuildRequires:  kf6-kirigami-addons-devel
+BuildRequires:  gmp-ecm-devel 
+BuildRequires:  kf6-knewstuff-devel 
+BuildRequires:  kf6-knotifyconfig-devel 
+BuildRequires:  kf6-attica-devel 
+BuildRequires:  kf6-krunner-devel 
+BuildRequires:  kf6-sonnet-devel 
+BuildRequires:  kf6-kitemmodels-devel 
+BuildRequires:  kf6-kstatusnotifieritem-devel
+BuildRequires:  kf6-qqc2-desktop-style
 # Plasma dependencies
 BuildRequires:  plasma-workspace-devel
 BuildRequires:  kwin-devel
+BuildRequires:  kwin-x11-devel
 BuildRequires:  kdecoration-devel
+BuildRequires:  libplasma-devel 
+BuildRequires:  plasma-activities-devel 
+BuildRequires:  plasma-wayland-protocols 
+BuildRequires:  kf5-plasma-devel
+BuildRequires:  plasma5support-devel 
+BuildRequires:  plasma-activities-stats-devel 
 # Qt dependencies
+BuildRequires:  qt-devel 
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qt5compat-devel
 BuildRequires:  qt6-qtmultimedia-devel
 BuildRequires:  qt6-qtwayland-devel
-BuildRequires:  qt6-qtdeclarative-devel
+BuildRequires:  qt6-qtdeclarative-devel 
+BuildRequires:  qt6-qt5compat-devel 
+BuildRequires:  qt6-qtwayland-devel
 # Other dependencies
 BuildRequires:  wayland-devel
 BuildRequires:  plasma-wayland-protocols-devel
 BuildRequires:  libepoxy-devel
 BuildRequires:  libdrm-devel
+BuildRequires:  polkit-qt6-1-devel 
 
 # Specific extras for the theme
 Requires:       kvantum
@@ -92,11 +112,35 @@ for effect in kwin/effects_cpp/*; do
         pushd build-$EFFECT_NAME
         %cmake ../$effect \
             -G "Unix Makefiles" \
+            -DKWIN_BUILD_WAYLAND=ON \
             -DCMAKE_BUILD_TYPE=Release -B .
         make %{?_smp_mflags}
         popd
     fi
 done
+
+# Build plasmoids
+for plasmoid in plasma/plasmoids/src/*; do
+    if [ -d "$plasmoid" ] && [ -f "$plasmoid/CMakeLists.txt" ]; then
+        PLASMOID_NAME=$(basename "$plasmoid")
+        mkdir -p build-$PLASMOID_NAME
+        pushd build-$PLASMOID_NAME
+        %cmake ../$plasmoid \
+            -G "Unix Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release -B .
+        make %{?_smp_mflags}
+        popd
+    fi
+done
+
+#Build kcmloader
+mkdir -p build-kcmloader
+pushd build-kcmloader
+%cmake ../plasma/aerothemeplasma-kcmloader \
+    -G "Unix Makefiles" \
+    -DCMAKE_BUILD_TYPE=Release -B .
+make %{?_smp_mflags}
+popd
 
 %install
 # Clear buildroot
@@ -119,9 +163,31 @@ for effect in kwin/effects_cpp/*; do
     fi
 done
 
+#install compiled plasmoids
+for plasmoid in plasma/plasmoids/src/*; do
+    if [ -d "$plasmoid" ] && [ -f "$plasmoid/CMakeLists.txt" ]; then
+        PLASMOID_NAME=$(basename "$plasmoid")
+        if [ -d build-$PLASMOID_NAME ]; then
+            pushd build-$PLASMOID_NAME
+            %make_install
+          popd
+        fi
+    fi
+done
+
+#Install kcmloader
+pushd build-kcmloader
+%make_install
+popd
+
 # Install SMOD window decoration resource file
 mkdir -p %{buildroot}%{_datadir}/smod/decorations
-cp -r plasma/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
+cp -r kwin/smod/decorations/Aero.smod.rcc %{buildroot}%{_datadir}/smod/decorations/
+
+# Install remaining SMOD files
+mkdir -p %{buildroot}%{_datadir}/smod/kwin
+cp -r kwin/smod/kwin/*.png %{buildroot}%{_datadir}/smod/kwin/
+cp -r kwin/smod/snapeffecttextures.smod.rcc %{buildroot}%{_datadir}/smod/
 
 # Create directories
 mkdir -p %{buildroot}%{_datadir}/icons
@@ -147,8 +213,8 @@ fi
 
 # Install SDDM theme
 if [ -d "plasma/sddm/sddm-theme-mod" ]; then
-  mkdir -p %{buildroot}%{_datadir}/sddm/themes/aero
-  cp -r plasma/sddm/sddm-theme-mod/* %{buildroot}%{_datadir}/sddm/themes/aero/
+  mkdir -p %{buildroot}%{_datadir}/sddm/themes/sddm-theme-mod
+  cp -r plasma/sddm/sddm-theme-mod/* %{buildroot}%{_datadir}/sddm/themes/sddm-theme-mod/
 fi
 
 # Install sound files
@@ -161,16 +227,16 @@ tar -xf "misc/icons/Windows 7 Aero.tar.gz" -C %{buildroot}%{_datadir}/icons
 tar -xf misc/cursors/aero-drop.tar.gz -C %{buildroot}%{_datadir}/icons
 
 # Install color scheme
-install -Dm644 plasma/color_scheme/AeroColorScheme1.colors \
-  %{buildroot}%{_datadir}/color-schemes/AeroColorScheme1.colors
+install -Dm644 plasma/color_scheme/Aero.colors \
+  %{buildroot}%{_datadir}/color-schemes/Aero.colors
 
 # Install plasma desktop theme
 mkdir -p %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black
 cp -r plasma/desktoptheme/Seven-Black/* %{buildroot}%{_datadir}/plasma/desktoptheme/Seven-Black/
 
 # Install shell overrides (including custom lock screen)
-mkdir -p %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop
-cp -r plasma/shells/org.kde.plasma.desktop/* %{buildroot}%{_datadir}/plasma/shells/org.kde.plasma.desktop/
+mkdir -p %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
+cp -r plasma/shells/io.gitgud.wackyideas.desktop/* %{buildroot}%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop/
 
 # Install look-and-feel
 mkdir -p %{buildroot}%{_datadir}/plasma/look-and-feel/authui7
@@ -277,10 +343,10 @@ kbuildsycoca6 &> /dev/null || :
 %license LICENSE
 %doc README.md INSTALL.md
 %{_datadir}/plasma/desktoptheme/Seven-Black
-%{_datadir}/plasma/shells/org.kde.plasma.desktop
+%{_datadir}/plasma/shells/io.gitgud.wackyideas.desktop
 %{_datadir}/plasma/look-and-feel/authui7
 %{_datadir}/plasma/plasmoids/io.gitgud.wackyideas.*
-%{_datadir}/plasma/plasmoids/org.kde.*
+# %{_datadir}/plasma/plasmoids/org.kde.*
 %{_datadir}/plasma/layout-templates
 %dir %{_datadir}/kwin/effects
 %dir %{_datadir}/kwin/effects/*
@@ -288,20 +354,25 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/kwin/scripts
 %{_datadir}/kwin/tabbox
 %{_datadir}/kwin/outline
-%{_datadir}/sddm/themes/aero
+%{_datadir}/sddm/themes/sddm-theme-mod
 %{_datadir}/Kvantum
 %{_datadir}/sounds/*
 %{_datadir}/icons/*
-%{_datadir}/color-schemes/AeroColorScheme1.colors
+%{_datadir}/color-schemes/Aero.colors
 %{_datadir}/aerotheme
 %{_datadir}/mime/packages/*
-%{_datadir}/smod/decorations/
+%{_datadir}/smod/*
+%{_bindir}/aerothemeplasma-kcmloader
 
 # KDE decoration plugins
 %{_libdir}/qt6/plugins/org.kde.kdecoration3/org.smod.smod.so
 %{_libdir}/qt6/plugins/org.kde.kdecoration3.kcm/kcm_smoddecoration.so
 %{_libdir}/qt6/plugins/kwin/effects/configs/*.so
 %{_libdir}/qt6/plugins/kwin/effects/plugins/*.so
+
+# Compiled plasmoids
+%{_libdir}/qt6/plugins/plasma/applets/io.gitgud.wackyideas.*.so
+%{_libdir}/qt6/qml/io/gitgud/wackyideas/*
 
 # Include locale files
 %{_datadir}/locale/*/LC_MESSAGES/breeze_kwin_deco.mo
