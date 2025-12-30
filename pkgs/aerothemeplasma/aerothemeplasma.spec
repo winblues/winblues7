@@ -6,7 +6,7 @@
 
 Name:           aerothemeplasma
 Version:        0
-Release:        0.6.%{commitdate}git%{shortcommit}%{?dist}
+Release:        0.7.%{commitdate}git%{shortcommit}%{?dist}
 Summary:        Windows 7-inspired KDE Plasma desktop theme
 
 License:        AGPLv3
@@ -213,8 +213,8 @@ fi
 
 # Install SDDM theme
 if [ -d "plasma/sddm/sddm-theme-mod" ]; then
-  mkdir -p %{buildroot}%{_datadir}/sddm/themes/aero
-  cp -r plasma/sddm/sddm-theme-mod/* %{buildroot}%{_datadir}/sddm/themes/aero/
+  mkdir -p %{buildroot}%{_datadir}/sddm/themes/sddm-theme-mod
+  cp -r plasma/sddm/sddm-theme-mod/* %{buildroot}%{_datadir}/sddm/themes/sddm-theme-mod/
 fi
 
 # Install sound files
@@ -354,7 +354,7 @@ kbuildsycoca6 &> /dev/null || :
 %{_datadir}/kwin/scripts
 %{_datadir}/kwin/tabbox
 %{_datadir}/kwin/outline
-%{_datadir}/sddm/themes/aero
+%{_datadir}/sddm/themes/sddm-theme-mod
 %{_datadir}/Kvantum
 %{_datadir}/sounds/*
 %{_datadir}/icons/*
