@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 VERSION=0-0.9.20260204gitd572194.fc43
-URL=https://github.com/bominic27644/winblues7/releases/download/aerothemeplasma-${VERSION}/aerothemeplasma-${VERSION}.x86_64.rpm
+URL=https://github.com/winblues/winblues7/releases/download/aerothemeplasma-${VERSION}/aerothemeplasma-${VERSION}.x86_64.rpm
 
 curl -L -o /tmp/aerothemeplasma.rpm "$URL"
 
