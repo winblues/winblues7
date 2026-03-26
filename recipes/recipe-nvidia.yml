@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: winblues7-nvidia
 description: Winblues 7
 
@@ -12,10 +13,17 @@ modules:
       copr:
         enable:
           - bazzite-org/bazzite 
+          - bominic27644/aerothemeplasma-rpm
     install:
       packages:
       - kvantum
       - plymouth-plugin-script
+      - aerothemeplasma-sounds
+      - aerothemeplasma-icons
+      - aerothemeplasma-desktop
+      - aeroshell-workspace
+      - aeroshell-smod
+      - aeroshell-kwin-components
 
   - type: script
     snippets:
