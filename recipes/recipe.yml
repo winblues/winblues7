@@ -24,7 +24,10 @@ modules:
       - aeroshell-workspace
       - aeroshell-smod
       - aeroshell-kwin-components
-      - aeroshell-libplasma
+    replace:
+      - from-repo: copr:copr.fedorainfracloud.org:bominic27644:aerothemeplasma-rpm
+        packages:
+          - libplasma
 
   - type: script
     snippets:
