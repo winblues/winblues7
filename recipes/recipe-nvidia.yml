@@ -24,6 +24,7 @@ modules:
       - aeroshell-workspace
       - aeroshell-smod
       - aeroshell-kwin-components
+      - aeroshell-libplasma
 
   - type: script
     snippets:
