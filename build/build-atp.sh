@@ -37,6 +37,8 @@ dnf install -y \
     kf6-kirigami-devel \
     kf6-kirigami-addons-devel \
     kf6-frameworkintegration-devel \
+    plasma-activities-devel \
+    plasma-activities-stats-devel \
     plasma-workspace-devel \
     kwin-devel \
     kdecoration-devel \
@@ -50,7 +52,10 @@ dnf install -y \
     wayland-devel \
     plasma-wayland-protocols-devel \
     libepoxy-devel \
-    libdrm-devel
+    libdrm-devel \
+    polkit-qt6-1-devel \
+    libksysguard-devel \
+    kf6-kitemmodels-devel
 
 mkdir -p "$REPOS" "$DESTDIR"
 
@@ -71,87 +76,94 @@ cmake_build_install() {
         -B "$REPOS/$name/build" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+        -DCMAKE_PREFIX_PATH="$DESTDIR$PREFIX" \
         "$@"
     cmake --build "$REPOS/$name/build" -j"$NPROC"
-    cmake --install "$REPOS/$name/build" --destdir "$DESTDIR"
+    DESTDIR="$DESTDIR" cmake --install "$REPOS/$name/build"
 }
 
-# ---------------------------------------------------------------------------
 # 1. libplasma  (base library, must come first)
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/libplasma.git \
     libplasma
 
-# ---------------------------------------------------------------------------
 # 2. uac-polkit-agent
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/uac-polkit-agent.git \
     uac-polkit-agent \
     -DCMAKE_INSTALL_LIBEXECDIR=libexec/kf6
 
-# ---------------------------------------------------------------------------
 # 3. SMOD  (window decoration + glow effect)
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/smod.git \
     smod
 
-# ---------------------------------------------------------------------------
 # 4. aeroshell-workspace  (plasmoids, plasma components)
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/aeroshell-workspace.git \
     aeroshell-workspace
 
-# ---------------------------------------------------------------------------
 # 5. aeroshell-kwin-components  (Wayland KWin effects/scripts)
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/aeroshell-kwin-components.git \
     aeroshell-kwin-components \
     -DKWIN_BUILD_WAYLAND=ON
 
-# ---------------------------------------------------------------------------
 # 6. aeroshell-sddm-kcm  (SDDM configuration KCM)
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/aeroshell-sddm-kcm.git \
     aeroshell-sddm-kcm
 
-# ---------------------------------------------------------------------------
 # 7. aerothemeplasma-icons
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/atp/aerothemeplasma-icons.git \
     aerothemeplasma-icons
 
-# ---------------------------------------------------------------------------
 # 8. aerothemeplasma-sounds
-# ---------------------------------------------------------------------------
 cmake_build_install \
     https://gitgud.io/aeroshell/atp/aerothemeplasma-sounds.git \
     aerothemeplasma-sounds
 
-# ---------------------------------------------------------------------------
 # 9. aerothemeplasma main repo  (plasma themes, misc; pinned commit)
-# ---------------------------------------------------------------------------
-git clone https://gitgud.io/wackyideas/aerothemeplasma.git "$REPOS/aerothemeplasma"
-git -C "$REPOS/aerothemeplasma" checkout "$ATP_COMMIT"
+git init "$REPOS/aerothemeplasma"
+git -C "$REPOS/aerothemeplasma" remote add origin https://gitgud.io/wackyideas/aerothemeplasma.git
+git -C "$REPOS/aerothemeplasma" fetch --depth=1 origin "$ATP_COMMIT"
+git -C "$REPOS/aerothemeplasma" checkout FETCH_HEAD
 
-cmake \
-    -S "$REPOS/aerothemeplasma" \
-    -B "$REPOS/aerothemeplasma/build" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-    -DCMAKE_INSTALL_LIBEXECDIR=libexec
-cmake --build "$REPOS/aerothemeplasma/build" -j"$NPROC"
-cmake --install "$REPOS/aerothemeplasma/build" --destdir "$DESTDIR"
+echo "=== aerothemeplasma root listing ==="
+ls "$REPOS/aerothemeplasma/"
+echo "=== CMakeLists.txt search ==="
+find "$REPOS/aerothemeplasma" -name 'CMakeLists.txt' -not -path '*/.git/*' | sort
 
-# ---------------------------------------------------------------------------
-# Package
-# ---------------------------------------------------------------------------
+if [ -f "$REPOS/aerothemeplasma/CMakeLists.txt" ]; then
+    cmake \
+        -S "$REPOS/aerothemeplasma" \
+        -B "$REPOS/aerothemeplasma/build" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+        -DCMAKE_PREFIX_PATH="$DESTDIR$PREFIX" \
+        -DCMAKE_INSTALL_LIBEXECDIR=libexec
+    cmake --build "$REPOS/aerothemeplasma/build" -j"$NPROC"
+    DESTDIR="$DESTDIR" cmake --install "$REPOS/aerothemeplasma/build"
+else
+    echo "No root CMakeLists.txt — building each top-level cmake subdirectory"
+    while IFS= read -r cmakefile; do
+        subdir=$(dirname "$cmakefile")
+        parent=$(dirname "$subdir")
+        # Skip nested cmake projects (parent also has CMakeLists.txt)
+        [ -f "$parent/CMakeLists.txt" ] && continue
+        cmake \
+            -S "$subdir" \
+            -B "$subdir/build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+            -DCMAKE_PREFIX_PATH="$DESTDIR$PREFIX" \
+            -DCMAKE_INSTALL_LIBEXECDIR=libexec
+        cmake --build "$subdir/build" -j"$NPROC"
+        DESTDIR="$DESTDIR" cmake --install "$subdir/build"
+    done < <(find "$REPOS/aerothemeplasma" -name 'CMakeLists.txt' -not -path '*/.git/*' -maxdepth 3 | sort)
+fi
+
 SHORT_SHA=${ATP_COMMIT:0:7}
 echo "=== Installed file list ==="
 find "$DESTDIR" -type f | sort

@@ -6,21 +6,29 @@ build:
   #!/bin/bash
   bluebuild build -B podman --tempdir /var/tmp recipes/recipe.yml
 
-build-atp-oci:
+# Build ATP inside a Fedora 43 container; produces ./atp-files.tar.gz locally.
+build-atp:
   #!/bin/bash
   set -euo pipefail
-  SHA=$(cat atp-commit.txt | tr -d '[:space:]')
-  SHORT_SHA=${SHA:0:7}
-  TAG="${SHORT_SHA}-fc43"
   podman run --rm \
     --volume ./:/workspace:Z \
     registry.fedoraproject.org/fedora:43 \
     bash /workspace/build/build-atp.sh
+
+# Push an already-built ./atp-files.tar.gz to GHCR.
+push-atp:
+  #!/bin/bash
+  set -euo pipefail
+  SHA=$(cat atp-commit.txt | tr -d '[:space:]')
+  TAG="${SHA:0:7}-fc43"
   oras push \
     ghcr.io/winblues/aerothemeplasma:${TAG} \
     --artifact-type application/vnd.aerothemeplasma.config.v1+json \
     ./atp-files.tar.gz:application/vnd.aerothemeplasma.files.v1.tar+gzip
   echo "Pushed ghcr.io/winblues/aerothemeplasma:${TAG}"
+
+# Build and push in one step (used by CI).
+build-atp-oci: build-atp push-atp
 
 update-atp-commit:
   #!/bin/bash
