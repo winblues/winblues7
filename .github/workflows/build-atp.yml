@@ -8,10 +8,10 @@ on:
     paths:
       - atp-common/Containerfile
       - .github/workflows/build-atp.yml
-    pull_request:
-      paths:
-        - atp-common/Containerfile
-        - .github/workflows/build-atp.yml
+  pull_request:
+    paths:
+      - atp-common/Containerfile
+      - .github/workflows/build-atp.yml
   workflow_dispatch:
 
 env:
