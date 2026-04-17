@@ -3,8 +3,6 @@ permissions:
   contents: write
 on:
   push:
-    branches:
-      - main
     paths:
       - atp-common/Containerfile
       - .github/workflows/build-atp.yml
