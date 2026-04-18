@@ -40,7 +40,6 @@ RUN dnf5 install -y gcc \
                     kf6-karchive-devel \
                     plasma-wayland-protocols-devel \
                     qt6-qtbase-private-devel \
-                    qt6-qtbase-devel \
                     kf6-knewstuff-devel \
                     kf6-knotifyconfig-devel \
                     kf6-attica-devel \
@@ -61,7 +60,7 @@ WORKDIR /build
 RUN git clone https://gitgud.io/wackyideas/aerothemeplasma.git --depth 1
 WORKDIR /build/aerothemeplasma
 
-RUN mkdir -p /usr/local/share/mime/packages || true
+RUN mkdir -p /usr/local/share/mime/packages
 RUN CMAKE_GENERATOR=Ninja bash install.sh --skip-x11
 
 # Prepare required files
