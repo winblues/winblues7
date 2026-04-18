@@ -60,7 +60,7 @@ WORKDIR /build
 RUN git clone https://gitgud.io/wackyideas/aerothemeplasma.git --depth 1
 WORKDIR /build/aerothemeplasma
 
-RUN mkdir -p /usr/local/share/mime/packages
+RUN mkdir -p /usr/local/share/mime/packages || true
 RUN CMAKE_GENERATOR=Ninja bash install.sh --skip-x11
 
 # Prepare required files
