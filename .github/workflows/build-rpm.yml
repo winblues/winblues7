@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up Podman
       run: |
@@ -56,7 +56,7 @@ jobs:
         echo "Extracted RPM filename: $rpm_filename"
 
     - name: Upload RPM as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: RPM
         path: anda-build/rpm/rpms/*.rpm
@@ -70,7 +70,7 @@ jobs:
 
     steps:
     - name: Download RPM artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: RPM
         path: ./rpm-artifacts

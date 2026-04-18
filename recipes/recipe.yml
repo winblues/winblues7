@@ -7,6 +7,11 @@ image-version: latest
 
 modules:
   - type: dnf
+    repos:
+      cleanup: true
+      copr:
+        enable:
+          - bazzite-org/bazzite 
     install:
       packages:
       - kvantum
