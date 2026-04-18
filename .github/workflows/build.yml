@@ -1,8 +1,7 @@
 name: bluebuild
 on:
   schedule:
-    - cron:
-        "00 06 * * 3" # build at 06:00 UTC every Wednesday
+    - cron: "00 06 * * 3" # build at 06:00 UTC every Wednesday
   push:
     paths-ignore: # don't rebuild if only documentation has changed
       - "**.md"
@@ -29,11 +28,12 @@ jobs:
           - recipe-nvidia.yml
     steps:
       - name: Build Custom Image
-        uses: blue-build/github-action@v1.8
+        uses: blue-build/github-action@v1.11
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}
           registry_token: ${{ github.token }}
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
+          push: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'false' || 'true' }}
           build_opts: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && '--no-sign' || '' }}
