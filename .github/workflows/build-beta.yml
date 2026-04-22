@@ -1,0 +1,37 @@
+name: bluebuild
+on:
+  pull_request:
+    paths:
+      - .github/workflows/build-beta.yml
+      - recipes/recipe-beta.yml
+      - recipes/recipe-nvidia-beta.yml
+  workflow_dispatch: # allow manually triggering beta builds
+concurrency:
+  # only run one build at a time
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  bluebuild:
+    name: Build Custom Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false # stop GH from cancelling all matrix builds if one fails
+      matrix:
+        recipe:
+          - recipe.yml
+          - recipe-nvidia.yml
+    steps:
+      - name: Build Custom Image
+        uses: blue-build/github-action@v1.11
+        with:
+          recipe: ${{ matrix.recipe }}
+          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
+          registry_token: ${{ github.token }}
+          pr_event_number: ${{ github.event.number }}
+          maximize_build_space: true
+          push: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'false' || 'true' }}
+          build_opts: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && '--no-sign' || '' }}

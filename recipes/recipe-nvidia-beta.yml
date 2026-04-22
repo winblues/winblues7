@@ -1,0 +1,43 @@
+---
+name: winblues7-nvidia
+description: Winblues 7
+
+base-image: ghcr.io/ublue-os/bazzite-dx-nvidia
+image-version: beta
+
+modules:
+  - type: dnf
+    install:
+      packages:
+        - kvantum
+        - plymouth-plugin-script
+
+  - type: copy
+    from: ghcr.io/winblues/atp-common
+    src: /system-files
+    dest: /
+
+  - type: script
+    snippets:
+      - "rm /usr/share/wayland-sessions/plasma.desktop"
+    scripts:
+      - 00-image-info.sh
+      - 11-fonts.sh
+      - 12-plymouth.sh
+      - 13-branding.sh
+
+  - type: files
+    files:
+      - source: system/etc/xdg
+        destination: /etc/xdg
+      - source: system/usr/share/pixmaps
+        destination: /usr/share/pixmaps
+      - source: system/usr/share/ublue-os
+        destination: /usr/share/ublue-os
+      - source: system/usr/share/wallpapers
+        destination: /usr/share/wallpapers
+
+  # Regenerate initramfs because of plymouth
+  - type: initramfs
+
+  - type: signing
