@@ -1,4 +1,4 @@
-name: bluebuild
+name: bluebuild-beta
 on:
   pull_request:
     paths:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch: # allow manually triggering beta builds
 concurrency:
   # only run one build at a time
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref || github.run_id }}
   cancel-in-progress: true
 jobs:
   bluebuild:
