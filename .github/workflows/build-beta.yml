@@ -22,8 +22,8 @@ jobs:
       fail-fast: false # stop GH from cancelling all matrix builds if one fails
       matrix:
         recipe:
-          - recipe.yml
-          - recipe-nvidia.yml
+          - recipe-beta.yml
+          - recipe-nvidia-beta.yml
     steps:
       - name: Build Custom Image
         uses: blue-build/github-action@v1.11
