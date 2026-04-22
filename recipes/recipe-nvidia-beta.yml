@@ -15,7 +15,7 @@ modules:
 
   - type: copy
     from: ghcr.io/winblues/atp-common
-    src: /system-files
+    src: /system_files
     dest: /
 
   - type: script
