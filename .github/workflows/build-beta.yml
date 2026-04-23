@@ -3,8 +3,9 @@ on:
   pull_request:
     paths:
       - .github/workflows/build-beta.yml
-      - recipes/recipe-beta.yml
-      - recipes/recipe-nvidia-beta.yml
+      - recipes/**
+      - files/**
+      - atp-common/**
   workflow_dispatch: # allow manually triggering beta builds
 concurrency:
   # only run one build at a time
