@@ -1,13 +1,12 @@
-name: bluebuild
+name: bluebuild-beta
 on:
-  schedule:
-    - cron: "00 06 * * 3" # build at 06:00 UTC every Wednesday
-  push:
-    paths-ignore: # don't rebuild if only documentation has changed
-      - "**.md"
-
   pull_request:
-  workflow_dispatch: # allow manually triggering builds
+    paths:
+      - .github/workflows/build-beta.yml
+      - recipes/**
+      - files/**
+      - atp-common/**
+  workflow_dispatch: # allow manually triggering beta builds
 concurrency:
   # only run one build at a time
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref || github.run_id }}
@@ -24,8 +23,8 @@ jobs:
       fail-fast: false # stop GH from cancelling all matrix builds if one fails
       matrix:
         recipe:
-          - recipe.yml
-          - recipe-nvidia.yml
+          - recipe-beta.yml
+          - recipe-nvidia-beta.yml
     steps:
       - name: Build Custom Image
         uses: blue-build/github-action@v1.11
