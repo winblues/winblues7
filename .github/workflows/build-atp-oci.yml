@@ -1,0 +1,76 @@
+name: Build and Push ATP OCI Artifact
+
+permissions:
+  packages: write
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - atp-commit.txt
+      - build/build-atp.sh
+      - .github/workflows/build-atp-oci.yml
+  workflow_dispatch:
+
+jobs:
+  build-atp-oci:
+    name: Build ATP OCI Artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read ATP commit SHA
+        id: atp
+        run: |
+          SHA=$(cat atp-commit.txt | tr -d '[:space:]')
+          SHORT_SHA=${SHA:0:7}
+          echo "sha=$SHA"         >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "tag=${SHORT_SHA}-fc43" >> $GITHUB_OUTPUT
+
+      - name: Set up ORAS
+        uses: oras-project/setup-oras@v1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if artifact already exists
+        id: check
+        run: |
+          if oras manifest fetch ghcr.io/winblues/aerothemeplasma:${{ steps.atp.outputs.tag }} &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Artifact ghcr.io/winblues/aerothemeplasma:${{ steps.atp.outputs.tag }} already exists — skipping build"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Podman
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y podman
+
+      - name: Build ATP in Fedora 43 container
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          podman run --rm \
+            --volume ${{ github.workspace }}:/workspace:Z \
+            registry.fedoraproject.org/fedora:43 \
+            bash /workspace/build/build-atp.sh
+
+      - name: Push OCI artifact
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          oras push \
+            ghcr.io/winblues/aerothemeplasma:${{ steps.atp.outputs.tag }} \
+            --artifact-type application/vnd.aerothemeplasma.config.v1+json \
+            ${{ github.workspace }}/atp-files.tar.gz:application/vnd.aerothemeplasma.files.v1.tar+gzip
+          echo "Pushed ghcr.io/winblues/aerothemeplasma:${{ steps.atp.outputs.tag }}"

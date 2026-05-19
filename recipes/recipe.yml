@@ -11,6 +11,7 @@ modules:
       packages:
       - kvantum
       - plymouth-plugin-script
+      - golang-oras
 
   - type: script
     snippets:
