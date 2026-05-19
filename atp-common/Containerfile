@@ -66,7 +66,7 @@ RUN CMAKE_GENERATOR=Ninja bash install.sh --skip-x11
 # Prepare required files
 RUN mkdir -p /build/aerothemeplasma/system_files && \
     for manifest in /build/aerothemeplasma/manifest/*manifest.txt; do \
-        while read -r file; do \
+        while read -r file || [[ -n "$file" ]]; do \
             mkdir -p "/build/aerothemeplasma/system_files/$(dirname "$file")" && \
             cp -r "$file" "/build/aerothemeplasma/system_files/$file"; \
         done < "$manifest"; \
